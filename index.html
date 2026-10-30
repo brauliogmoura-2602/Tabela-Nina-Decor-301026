@@ -3,297 +3,198 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Nina Decor - Tabela de Preços</title>
+  <title>Nina Decor</title>
   
-  <!-- Configurações PWA e Ícones para iOS/Android -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nina Decor">
-  <meta name="theme-color" content="#121826">
+  <meta name="theme-color" content="#0f172a">
   <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/armchair.png">
   <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/armchair.png">
 
-  <!-- Fontes Google -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      --bg-main: #0f172a;
-      --card-bg: #1e293b;
+      --bg: #0f172a;
+      --card: #1e293b;
       --accent: #d97706;
-      --accent-hover: #b45309;
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
       --border: #334155;
       --green: #22c55e;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 90px; }
 
-    body {
-      background-color: var(--bg-main);
-      color: var(--text-primary);
-      padding-bottom: 90px;
-      min-height: 100vh;
-    }
-
-    /* Header */
     header {
-      position: sticky;
-      top: 0;
-      background: rgba(15, 23, 42, 0.9);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 100;
-      padding: 16px;
+      position: sticky; top: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 100; padding: 14px 16px;
       border-bottom: 1px solid var(--border);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .logo { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; }
+    .brand h1 { font-size: 1.15rem; font-weight: 700; }
 
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #d97706, #f59e0b);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #fff;
-    }
+    .search { width: 100%; padding: 12px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 0.95rem; outline: none; margin-bottom: 10px; }
 
-    .brand h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
+    .tabs { display: flex; gap: 8px; }
+    .tab { padding: 6px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; color: var(--muted); cursor: pointer; }
+    .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    /* Search & Filters */
-    .search-box {
-      position: relative;
-      margin-bottom: 10px;
-    }
+    .container { padding: 16px; }
+    .group-title { font-size: 0.8rem; text-transform: uppercase; color: var(--accent); margin: 16px 0 8px 2px; font-weight: 700; letter-spacing: 0.05em; }
 
-    .search-input {
-      width: 100%;
-      padding: 12px 16px 12px 42px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text-primary);
-      font-size: 0.95rem;
-      outline: none;
-      transition: all 0.2s;
-    }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .info { flex: 1; }
+    .title { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .spec { font-size: 0.78rem; color: var(--muted); line-height: 1.3; }
+    .price { font-size: 1rem; font-weight: 700; color: #38bdf8; white-space: nowrap; text-align: right; }
 
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
-    }
+    .btn-add { margin-top: 6px; background: rgba(217, 119, 6, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
 
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-secondary);
-      width: 18px;
-      height: 18px;
-    }
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; border-top: 1px solid var(--border); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+    .total-val { font-size: 1.1rem; font-weight: 700; color: var(--green); }
+    .total-cnt { font-size: 0.75rem; color: var(--muted); }
 
-    .categories {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
-    }
-
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
-
-    .chip {
-      padding: 6px 14px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      white-space: nowrap;
-      cursor: pointer;
-    }
-
-    .chip.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    /* Product List */
-    .container {
-      padding: 16px;
-    }
-
-    .section-title {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-secondary);
-      margin: 16px 0 8px 4px;
-      font-weight: 600;
-    }
-
-    .product-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .product-info {
-      flex: 1;
-    }
-
-    .product-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: var(--text-primary);
-    }
-
-    .product-spec {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      line-height: 1.3;
-    }
-
-    .product-price {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--accent);
-      white-space: nowrap;
-      text-align: right;
-    }
-
-    .add-btn {
-      margin-top: 6px;
-      background: rgba(217, 119, 6, 0.15);
-      color: var(--accent);
-      border: none;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .add-btn:active {
-      transform: scale(0.95);
-    }
-
-    /* Floating Cart Footer */
-    .cart-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(30, 41, 59, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--border);
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .cart-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .cart-count {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-
-    .cart-total {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--green);
-    }
-
-    .send-btn {
-      background: var(--green);
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-secondary);
-    }
+    .btn-wa { background: var(--green); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="brand">
-      <div class="brand-icon">N</div>
+      <div class="logo">N</div>
       <h1>Nina Decor</h1>
     </div>
-    
-    <div class="search-box">
-      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-      </svg>
-      <input type="text" id="searchInput" class="search-input" placeholder="Buscar cadeira, mesa, tecido..." oninput="filterProducts()">
-    </div>
-
-    <div class="categories">
-      <button class="chip active" onclick="setCategory('todos', this)">Todos</button>
-      <button class="chip" onclick="setCategory('cadeira', this)">Cadeiras</button>
-      <button class="chip" onclick="setCategory('mesa', this)">Mesas</button>
+    <input type="text" id="src" class="search" placeholder="Buscar produto, tecido, modelo..." oninput="render()">
+    <div class="tabs">
+      <button class="tab active" onclick="setCat('all', this)">Todos</button>
+      <button class="tab" onclick="setCat('cad', this)">Cadeiras</button>
+      <button class="tab" onclick="setCat('mes', this)">Mesas</button>
     </div>
   </header>
 
-  <div class="container" id="productList">
-    <!-- Produtos renderizados dinamicamente via JS -->
+  <div class="container" id="app"></div>
+
+  <div class="footer">
+    <div>
+      <div class="total-cnt" id="cnt">0 itens selecionados</div>
+      <div class="total-val" id="tot">R$ 0,00</div>
+    </div>
+    <button class="btn-wa" onclick="send()">Enviar WhatsApp</button>
   </div>
 
-  <div class="cart-bar">
-    <div class="cart-info">
-      <span class="cart-count" id="cartCount">0 itens selecionados</span>
-      <span class="
+  <script>
+    var items = [
+      { c: 'cad', g: 'Cadeira Cascata', t: 'Cadeira Cascata New - Linho', s: 'Corpo: Mel / Tecido: Linho / Encosto: Laminado Cor Mel', p: 346.19 },
+      { c: 'cad', g: 'Cadeira Cascata', t: 'Cadeira Cascata New - Boucle ou Corino', s: 'Corpo: Mel / Tecido: Boucle ou Corino / Encosto: Laminado Cor Mel', p: 369.49 },
+      { c: 'cad', g: 'Cadeira Milano', t: 'Cadeira Milano - Linho', s: 'Corpo: Mel / Tecido: Linho / Encosto: Ratam', p: 346.19 },
+      { c: 'cad', g: 'Cadeira Milano', t: 'Cadeira Milano - Boucle ou Corino', s: 'Corpo: Mel / Tecido: Boucle ou Corino / Encosto: Ratam', p: 369.49 },
+      { c: 'cad', g: 'Cadeira New Luxury', t: 'Cadeira Luxury New - Linho', s: 'Corpo: Mel / Tecido: Linho / Encosto: Linho', p: 368.50 },
+      { c: 'cad', g: 'Cadeira New Luxury', t: 'Cadeira Luxury New - Boucle ou Corino', s: 'Corpo: Mel / Tecido: Boucle ou Corino / Encosto: Boucle ou Corino', p: 391.42 },
+      { c: 'cad', g: 'Cadeira Cora', t: 'Cadeira Cora - Linho', s: 'Corpo: Mel / Tecido Linho / Encosto: Ratam', p: 248.51 },
+      { c: 'cad', g: 'Cadeira Cora', t: 'Cadeira Cora - Boucle ou Corino', s: 'Corpo: Mel / Tecido Boucle ou Corino / Encosto: Ratam', p: 259.77 },
+      { c: 'cad', g: 'Cadeira Boreal', t: 'Cadeira Boreal - Linho', s: 'Corpo: Mel / Tecido: Linho / Encosto: Laminado Cor Mel', p: 268.00 },
+      { c: 'cad', g: 'Cadeira Boreal', t: 'Cadeira Boreal - Boucle ou Corino', s: 'Corpo: Mel / Tecido: Boucle ou Corino / Encosto: Laminado Cor Mel', p: 279.27 },
+      { c: 'cad', g: 'Cadeira Star', t: 'Cadeira Star - Linho', s: 'Corpo: Mel / Tecido: Linho / Encosto: Laminado Cor Mel', p: 267.96 },
+      { c: 'cad', g: 'Cadeira Star', t: 'Cadeira Star - Boucle ou Corino', s: 'Corpo: Mel / Tecido: Boucle ou Corino / Encosto: Laminado Cor Mel', p: 279.20 },
+      { c: 'cad', g: 'Cadeira Bella', t: 'Cadeira Bella - Linho', s: 'Corpo: Mel / Tecido: Linho / Encosto: Linho', p: 402.52 },
+      { c: 'cad', g: 'Cadeira Bella', t: 'Cadeira Bella - Boucle ou Corino', s: 'Corpo: Mel / Tecido: Boucle ou Corino / Encosto: Boucle ou Corino', p: 425.22 },
+      { c: 'mes', g: 'Mesa Cascata', t: 'Mesa Cascata 1,60 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1635.67 },
+      { c: 'mes', g: 'Mesa Cascata', t: 'Mesa Cascata 1,80 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1716.93 },
+      { c: 'mes', g: 'Mesa Cascata', t: 'Mesa Cascata 2,00 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1975.29 },
+      { c: 'mes', g: 'Mesa Cascata', t: 'Mesa Cascata 2,20 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 2331.01 },
+      { c: 'mes', g: 'Mesa Cascata', t: 'Mesa Cascata 2,40 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 2488.87 },
+      { c: 'mes', g: 'Mesa Cascata', t: 'Mesa Cascata 2,70 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 2829.22 },
+      { c: 'mes', g: 'Mesa Fox', t: 'Mesa Fox 1,40 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1325.04 },
+      { c: 'mes', g: 'Mesa Fox', t: 'Mesa Fox 1,60 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1429.25 },
+      { c: 'mes', g: 'Mesa Fox', t: 'Mesa Fox 1,80 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1529.69 },
+      { c: 'mes', g: 'Mesa Fox', t: 'Mesa Fox 2,00 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1782.99 },
+      { c: 'mes', g: 'Mesa Elegância', t: 'Mesa Elegância 1,30x1,30 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 1932.52 },
+      { c: 'mes', g: 'Mesa Elegância', t: 'Mesa Elegância 1,40x1,40 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 2080.20 },
+      { c: 'mes', g: 'Mesa Elegância', t: 'Mesa Elegância 1,50x1,50 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 2143.29 },
+      { c: 'mes', g: 'Mesa Elegância', t: 'Mesa Elegância 1,60x1,60 Laminada ou Vidro', s: 'Cor da Base: Mel / Cor do Tampo Cinamomo ou Vidro OFF / Canto: Copo', p: 2418.78 }
+    ];
+
+    var curCat = 'all';
+    var cart = {};
+
+    function fmt(v) { return 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+
+    function setCat(cat, el) {
+      curCat = cat;
+      var tabs = document.querySelectorAll('.tab');
+      for(var i=0; i<tabs.length; i++) tabs[i].classList.remove('active');
+      el.classList.add('active');
+      render();
+    }
+
+    function add(idx) {
+      cart[idx] = (cart[idx] || 0) + 1;
+      updCart();
+      render();
+    }
+
+    function updCart() {
+      var cnt = 0, tot = 0;
+      for(var k in cart) {
+        cnt += cart[k];
+        tot += cart[k] * items[k].p;
+      }
+      document.getElementById('cnt').innerText = cnt + (cnt === 1 ? ' item selecionado' : ' itens selecionados');
+      document.getElementById('tot').innerText = fmt(tot);
+    }
+
+    function render() {
+      var q = document.getElementById('src').value.toLowerCase();
+      var app = document.getElementById('app');
+      var html = '';
+      var currentGroup = '';
+
+      for(var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if(curCat !== 'all' && item.c !== curCat) continue;
+        if(q && item.t.toLowerCase().indexOf(q) === -1 && item.s.toLowerCase().indexOf(q) === -1 && item.g.toLowerCase().indexOf(q) === -1) continue;
+
+        if(item.g !== currentGroup) {
+          currentGroup = item.g;
+          html += '<div class="group-title">' + currentGroup + '</div>';
+        }
+
+        var qty = cart[i] || 0;
+        var btnTxt = qty > 0 ? 'Adicionado (' + qty + 'x)' : '+ Adicionar';
+
+        html += '<div class="card">' +
+          '<div class="info">' +
+            '<div class="title">' + item.t + '</div>' +
+            '<div class="spec">' + item.s + '</div>' +
+            '<button class="btn-add" onclick="add(' + i + ')">' + btnTxt + '</button>' +
+          '</div>' +
+          '<div class="price">' + fmt(item.p) + '</div>' +
+        '</div>';
+      }
+
+      app.innerHTML = html || '<div style="text-align:center; padding:30px; color:#94a3b8;">Nenhum item encontrado.</div>';
+    }
+
+    function send() {
+      var msg = '*Orçamento - Nina Decor*\n\n';
+      var tot = 0, has = false;
+      for(var k in cart) {
+        has = true;
+        var sub = cart[k] * items[k].p;
+        tot += sub;
+        msg += '• ' + cart[k] + 'x ' + items[k].t + '\n  ' + fmt(items[k].p) + ' -> ' + fmt(sub) + '\n';
+      }
+      if(!has) { alert('Selecione ao menos um produto.'); return; }
+      msg += '\n*Total: ' + fmt(tot) + '*';
+      window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    render();
+  </script>
+</body>
+</html>
