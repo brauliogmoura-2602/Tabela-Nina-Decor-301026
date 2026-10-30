@@ -1,0 +1,374 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tab Nina P - Tabela de Preços</title>
+
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#1a1817">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tab Nina P">
+    <meta name="description" content="Tabela de preços interativa Tab Nina P para móveis e cadeiras de alto padrão.">
+
+    <!-- Icons & Manifest Data URI -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23d97706'><rect width='512' height='512' rx='128' fill='%231c1917'/><path d='M160 160h192v48H160zm0 80h192v48H160zm0 80h120v48H160z' fill='%23f59e0b'/><circle cx='380' cy='340' r='30' fill='%23d97706'/></svg>">
+    
+    <!-- Dynamic Manifest Injection Script -->
+    <script>
+        const manifestData = {
+            "name": "Tab Nina P - Tabela de Preços",
+            "short_name": "Tab Nina P",
+            "description": "Tabela de preços e orçamentos rápida",
+            "start_url": "./",
+            "display": "standalone",
+            "background_color": "#1c1917",
+            "theme_color": "#1c1917",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%231c1917'/><path d='M160 160h192v48H160zm0 80h192v48H160zm0 80h120v48H160z' fill='%23f59e0b'/></svg>",
+                    "sizes": "512x512",
+                    "type": "image/svg+xml",
+                    "purpose": "any maskable"
+                }
+            ]
+        };
+        const stringManifest = JSON.stringify(manifestData);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                            950: '#451a03',
+                        },
+                        warmDark: '#141211',
+                        surfaceDark: '#1f1c1a',
+                        cardDark: '#282421',
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Smooth Scrolling and Native iOS feel */
+        body {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            background-color: #141211;
+            color: #f3f4f6;
+        }
+
+        /* Glassmorphic Effects */
+        .glass-header {
+            background: rgba(20, 18, 17, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .glass-card {
+            background: rgba(40, 36, 33, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-modal {
+            background: rgba(26, 24, 23, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #44403c;
+            border-radius: 9999px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-28 antialiased selection:bg-amber-500 selection:text-white">
+
+    <!-- Header Fixo -->
+    <header class="sticky top-0 z-30 glass-header border-b border-white/10 px-4 pt-10 pb-3 transition-all duration-200">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-900/30">
+                    <i data-lucide="armchair" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white leading-tight">Tab Nina P</h1>
+                    <p class="text-xs text-amber-400 font-medium">Catálogo & Tabela Oficial</p>
+                </div>
+            </div>
+            
+            <button id="pwaInstallBtn" onclick="showInstallInstructions()" class="hidden text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 active:scale-95 transition">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Instalar App</span>
+            </button>
+        </div>
+
+        <!-- Campo de Busca -->
+        <div class="max-w-md mx-auto mt-3 relative">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"></i>
+            <input 
+                type="text" 
+                id="searchInput"
+                placeholder="Buscar produto, linha, tecido ou valor..."
+                class="w-full bg-stone-900/90 text-stone-100 placeholder-stone-400 text-sm pl-10 pr-10 py-2.5 rounded-xl border border-stone-700/60 focus:outline-none focus:border-amber-500 transition shadow-inner"
+                oninput="handleSearch()"
+            />
+            <button id="clearSearch" onclick="clearSearchInput()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-white">
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Filtros Rápidos -->
+        <div class="max-w-md mx-auto mt-3 flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
+            <button onclick="filterCategory('ALL')" id="filter-ALL" class="cat-filter px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-amber-500 text-stone-950 shadow-md">
+                Todos (<span id="count-ALL">0</span>)
+            </button>
+            <button onclick="filterCategory('Cadeiras')" id="filter-Cadeiras" class="cat-filter px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-stone-800 text-stone-300 hover:bg-stone-700 border border-stone-700">
+                Cadeiras (<span id="count-Cadeiras">0</span>)
+            </button>
+            <button onclick="filterCategory('Mesas')" id="filter-Mesas" class="cat-filter px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-stone-800 text-stone-300 hover:bg-stone-700 border border-stone-700">
+                Mesas (<span id="count-Mesas">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-md mx-auto px-4 pt-4">
+        <!-- Banner Informativo -->
+        <div class="mb-4 p-3 rounded-xl bg-gradient-to-r from-amber-950/40 via-stone-900 to-stone-900 border border-amber-800/30 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-stone-200">Tabela Atualizada</p>
+                    <p class="text-[11px] text-stone-400">Toque em qualquer item para ver detalhes e cotar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Produtos Categorizados -->
+        <div id="productsContainer" class="space-y-6">
+            <!-- Renderizado via JavaScript -->
+        </div>
+
+        <!-- Mensagem para busca vazia -->
+        <div id="noResults" class="hidden text-center py-16">
+            <div class="w-16 h-16 rounded-full bg-stone-800 flex items-center justify-center mx-auto mb-3 text-stone-500">
+                <i data-lucide="package-x" class="w-8 h-8"></i>
+            </div>
+            <p class="text-stone-300 font-medium">Nenhum produto encontrado</p>
+            <p class="text-stone-500 text-xs mt-1">Tente pesquisar por outros termos</p>
+        </div>
+    </main>
+
+    <!-- Barra Inferior do Carrinho/Orçamento -->
+    <div id="cartBar" class="fixed bottom-0 left-0 right-0 z-20 glass-header border-t border-stone-800 p-4 shadow-2xl transition-transform duration-300 translate-y-full">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="cursor-pointer" onclick="toggleCartModal()">
+                <div class="flex items-center space-x-2">
+                    <span class="relative">
+                        <i data-lucide="shopping-bag" class="w-6 h-6 text-amber-400"></i>
+                        <span id="cartBadge" class="absolute -top-1.5 -right-2 bg-amber-500 text-stone-950 font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                    </span>
+                    <span class="text-xs text-stone-400 font-medium ml-1">Total da Cotação:</span>
+                </div>
+                <div id="cartTotal" class="text-lg font-bold text-amber-400 leading-tight">R$ 0,00</div>
+            </div>
+
+            <button onclick="toggleCartModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-stone-950 font-bold px-5 py-2.5 rounded-xl text-xs flex items-center space-x-2 shadow-lg shadow-amber-500/20 active:scale-95 transition">
+                <span>Ver Orçamento</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Detalhes do Produto -->
+    <div id="productModal" class="fixed inset-0 z-50 glass-modal hidden flex-col justify-end sm:justify-center p-0 sm:p-4 animate-fade-in">
+        <div class="bg-stone-900 border-t sm:border border-stone-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full mx-auto max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-stone-800 flex items-center justify-between">
+                <span id="modalCategory" class="text-[10px] font-bold tracking-wider uppercase bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full"></span>
+                <button onclick="closeProductModal()" class="p-1.5 rounded-full bg-stone-800 text-stone-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 overflow-y-auto space-y-4">
+                <h2 id="modalTitle" class="text-xl font-bold text-stone-100 leading-tight"></h2>
+                
+                <div class="bg-stone-950/60 p-4 rounded-xl border border-stone-800 space-y-2">
+                    <p class="text-xs text-stone-400 uppercase tracking-wide font-semibold">Especificações Técnicas</p>
+                    <p id="modalSpecs" class="text-sm text-stone-200 font-medium leading-relaxed"></p>
+                </div>
+
+                <div class="flex items-baseline justify-between pt-2">
+                    <span class="text-xs text-stone-400">Preço Unitário:</span>
+                    <span id="modalPrice" class="text-2xl font-black text-amber-400"></span>
+                </div>
+
+                <!-- Quantidade no Modal -->
+                <div class="flex items-center justify-between pt-2 border-t border-stone-800">
+                    <span class="text-sm font-semibold text-stone-300">Quantidade:</span>
+                    <div class="flex items-center space-x-3 bg-stone-800 p-1 rounded-xl border border-stone-700">
+                        <button onclick="adjustModalQty(-1)" class="w-8 h-8 rounded-lg bg-stone-700 text-stone-200 flex items-center justify-center active:bg-stone-600">
+                            <i data-lucide="minus" class="w-4 h-4"></i>
+                        </button>
+                        <span id="modalQty" class="text-base font-bold text-white w-6 text-center">1</span>
+                        <button onclick="adjustModalQty(1)" class="w-8 h-8 rounded-lg bg-amber-500 text-stone-950 flex items-center justify-center active:bg-amber-600 font-bold">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-stone-950 border-t border-stone-800 flex space-x-3">
+                <button onclick="addToCartFromModal()" class="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center space-x-2 active:scale-95 transition shadow-lg shadow-amber-500/20">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Adicionar ao Orçamento</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Orçamento Completo -->
+    <div id="cartModal" class="fixed inset-0 z-50 glass-modal hidden flex-col justify-end sm:justify-center p-0 sm:p-4 animate-fade-in">
+        <div class="bg-stone-900 border-t sm:border border-stone-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full mx-auto h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-stone-800 flex items-center justify-between bg-stone-950/50">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-amber-400"></i>
+                    <h3 class="text-base font-bold text-stone-100">Resumo do Orçamento</h3>
+                </div>
+                <button onclick="toggleCartModal()" class="p-1.5 rounded-full bg-stone-800 text-stone-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="cartItemsList" class="flex-1 overflow-y-auto p-4 space-y-3">
+                <!-- Itens adicionados aparecem aqui -->
+            </div>
+
+            <div class="p-4 bg-stone-950 border-t border-stone-800 space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-stone-400">Total Geral:</span>
+                    <span id="modalCartTotal" class="text-xl font-black text-amber-400">R$ 0,00</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button onclick="copyBudgetToClipboard()" class="w-full bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold py-3 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 border border-stone-700 active:scale-95 transition">
+                        <i data-lucide="copy" class="w-4 h-4 text-amber-400"></i>
+                        <span>Copiar Texto</span>
+                    </button>
+                    <button onclick="sendToWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg shadow-emerald-900/30 active:scale-95 transition">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span>WhatsApp</span>
+                    </button>
+                </div>
+
+                <button onclick="clearCart()" class="w-full text-stone-500 hover:text-rose-400 text-xs py-1 text-center font-medium">
+                    Esvaziar Lista
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Instruções de Instalação (PWA) -->
+    <div id="installModal" class="fixed inset-0 z-50 glass-modal hidden flex-col justify-end sm:justify-center p-0 sm:p-4 animate-fade-in">
+        <div class="bg-stone-900 border-t sm:border border-stone-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full mx-auto p-5 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-stone-100 flex items-center gap-2">
+                    <i data-lucide="smartphone" class="w-5 h-5 text-amber-400"></i>
+                    Instalar na Tela Inicial
+                </h3>
+                <button onclick="closeInstallInstructions()" class="p-1.5 rounded-full bg-stone-800 text-stone-400">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-stone-300 leading-relaxed">
+                Adicione o aplicativo diretamente à tela inicial do seu celular para abrir com um toque, como um app de loja nativo!
+            </p>
+
+            <div class="space-y-3 bg-stone-950/60 p-4 rounded-xl border border-stone-800 text-xs">
+                <div class="font-bold text-amber-400 flex items-center gap-1.5">
+                    <i data-lucide="apple" class="w-4 h-4"></i> iPhone / iPad (Safari)
+                </div>
+                <ol class="list-decimal pl-4 space-y-1 text-stone-300">
+                    <li>Toque no botão de <b>Compartilhar</b> (ícone de quadrado com seta para cima).</li>
+                    <li>Role para baixo e selecione <b>"Adicionar à Tela de Início"</b>.</li>
+                    <li>Toque em <b>Adicionar</b> no canto superior direito.</li>
+                </ol>
+
+                <div class="font-bold text-amber-400 flex items-center gap-1.5 pt-2 border-t border-stone-800">
+                    <i data-lucide="smartphone" class="w-4 h-4"></i> Android (Chrome)
+                </div>
+                <ol class="list-decimal pl-4 space-y-1 text-stone-300">
+                    <li>Toque nos <b>três pontinhos</b> no canto superior direito.</li>
+                    <li>Selecione <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.</li>
+                </ol>
+            </div>
+
+            <button onclick="closeInstallInstructions()" class="w-full bg-amber-500 text-stone-950 font-bold py-2.5 rounded-xl text-xs">
+                Entendi
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-stone-950 font-bold px-4 py-2 rounded-full text-xs shadow-xl flex items-center space-x-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px]">
+        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+        <span id="toastMsg">Mensagem</span>
+    </div>
+
+    <!-- Logic Script -->
+    <script
