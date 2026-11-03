@@ -9,8 +9,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nina Decor">
   <meta name="theme-color" content="#0f172a">
-  <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/armchair.png">
-  <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/armchair.png">
 
   <style>
     :root {
@@ -21,7 +19,6 @@
       --muted: #94a3b8;
       --border: #334155;
       --green: #22c55e;
-      --red: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -54,10 +51,10 @@
     .title { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; }
     .spec { font-size: 0.78rem; color: var(--muted); line-height: 1.3; }
     .price-box { text-align: right; white-space: nowrap; }
-    .price-orig { font-size: 0.8rem; color: var(--muted); text-decoration: line-through; }
+    .price-orig { font-size: 0.8rem; color: var(--muted); text-decoration: line-through; display: none; }
     .price-final { font-size: 1.05rem; font-weight: 700; color: #38bdf8; }
 
-    .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; pt: 8px; border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 4px; }
+    .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 4px; }
     .disc-group { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
     .disc-input { width: 55px; padding: 4px 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-weight: 600; font-size: 0.85rem; text-align: center; outline: none; }
     .disc-input:focus { border-color: var(--accent); }
@@ -150,22 +147,60 @@
       } else {
         cart[idx].qty += 1;
       }
-      updCart();
-      render();
-    }
-
-    function updateDisc(idx, val) {
-      var d = parseFloat(val) || 0;
-      if(d < 0) d = 0;
-      if(d > 10) d = 10; // Trava de no máximo 10%
       
-      document.getElementById('disc-' + idx).value = d;
-
-      if(cart[idx]) {
-        cart[idx].disc = d;
+      var btn = document.getElementById('btn-' + idx);
+      if(btn) {
+        btn.className = 'btn-add active';
+        btn.innerText = 'Adicionado (' + cart[idx].qty + 'x)';
       }
       updCart();
-      render();
+    }
+
+    function onDiscInput(idx, el) {
+      var raw = el.value;
+      
+      if(raw === '') {
+        if(cart[idx]) cart[idx].disc = 0;
+        updateCardPrices(idx, 0);
+        updCart();
+        return;
+      }
+
+      var val = parseFloat(raw);
+      if(isNaN(val)) return;
+
+      if(val > 10) {
+        val = 10;
+        el.value = 10;
+      } else if(val < 0) {
+        val = 0;
+        el.value = 0;
+      }
+
+      if(cart[idx]) {
+        cart[idx].disc = val;
+      }
+      
+      updateCardPrices(idx, val);
+      updCart();
+    }
+
+    function updateCardPrices(idx, disc) {
+      var pOrig = items[idx].p;
+      var pFinal = pOrig * (1 - disc / 100);
+      
+      var origEl = document.getElementById('porig-' + idx);
+      var finalEl = document.getElementById('pfinal-' + idx);
+      
+      if(finalEl) finalEl.innerText = fmt(pFinal);
+      if(origEl) {
+        if(disc > 0) {
+          origEl.innerText = fmt(pOrig);
+          origEl.style.display = 'block';
+        } else {
+          origEl.style.display = 'none';
+        }
+      }
     }
 
     function updCart() {
@@ -199,7 +234,7 @@
 
         var inCart = cart[i];
         var qty = inCart ? inCart.qty : 0;
-        var disc = inCart ? inCart.disc : (document.getElementById('disc-' + i) ? document.getElementById('disc-' + i).value : 0);
+        var disc = inCart ? inCart.disc : 0;
         
         var pFinal = item.p * (1 - (disc / 100));
         var hasDisc = disc > 0;
@@ -213,16 +248,16 @@
               '<div class="spec">' + item.s + '</div>' +
             '</div>' +
             '<div class="price-box">' +
-              (hasDisc ? '<div class="price-orig">' + fmt(item.p) + '</div>' : '') +
-              '<div class="price-final">' + fmt(pFinal) + '</div>' +
+              '<div class="price-orig" id="porig-' + i + '" style="display:' + (hasDisc ? 'block' : 'none') + '">' + fmt(item.p) + '</div>' +
+              '<div class="price-final" id="pfinal-' + i + '">' + fmt(pFinal) + '</div>' +
             '</div>' +
           '</div>' +
           '<div class="controls">' +
             '<div class="disc-group">' +
-              '<span>Desconto (máx 10%):</span>' +
-              '<input type="number" id="disc-' + i + '" class="disc-input" min="0" max="10" step="1" value="' + disc + '" onchange="updateDisc(' + i + ', this.value)" oninput="updateDisc(' + i + ', this.value)"> %' +
+              '<span>Desconto (0 a 10%):</span>' +
+              '<input type="number" id="disc-' + i + '" class="disc-input" min="0" max="10" step="1" value="' + (disc || '') + '" placeholder="0" oninput="onDiscInput(' + i + ', this)"> %' +
             '</div>' +
-            '<button class="' + btnClass + '" onclick="add(' + i + ')">' + btnTxt + '</button>' +
+            '<button id="btn-' + i + '" class="' + btnClass + '" onclick="add(' + i + ')">' + btnTxt + '</button>' +
           '</div>' +
         '</div>';
       }
