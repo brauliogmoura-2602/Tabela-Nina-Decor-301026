@@ -21,10 +21,11 @@
       --muted: #94a3b8;
       --border: #334155;
       --green: #22c55e;
+      --red: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding-bottom: 90px; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 100px; }
 
     header {
       position: sticky; top: 0;
@@ -47,16 +48,25 @@
     .container { padding: 16px; }
     .group-title { font-size: 0.8rem; text-transform: uppercase; color: var(--accent); margin: 16px 0 8px 2px; font-weight: 700; letter-spacing: 0.05em; }
 
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .card-main { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
     .info { flex: 1; }
-    .title { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .title { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; }
     .spec { font-size: 0.78rem; color: var(--muted); line-height: 1.3; }
-    .price { font-size: 1rem; font-weight: 700; color: #38bdf8; white-space: nowrap; text-align: right; }
+    .price-box { text-align: right; white-space: nowrap; }
+    .price-orig { font-size: 0.8rem; color: var(--muted); text-decoration: line-through; }
+    .price-final { font-size: 1.05rem; font-weight: 700; color: #38bdf8; }
 
-    .btn-add { margin-top: 6px; background: rgba(217, 119, 6, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; pt: 8px; border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 4px; }
+    .disc-group { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+    .disc-input { width: 55px; padding: 4px 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-weight: 600; font-size: 0.85rem; text-align: center; outline: none; }
+    .disc-input:focus { border-color: var(--accent); }
+
+    .btn-add { background: rgba(217, 119, 6, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .btn-add.active { background: var(--accent); color: #fff; }
 
     .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; border-top: 1px solid var(--border); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-    .total-val { font-size: 1.1rem; font-weight: 700; color: var(--green); }
+    .total-val { font-size: 1.15rem; font-weight: 700; color: var(--green); }
     .total-cnt { font-size: 0.75rem; color: var(--muted); }
 
     .btn-wa { background: var(--green); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
@@ -120,7 +130,7 @@
     ];
 
     var curCat = 'all';
-    var cart = {};
+    var cart = {}; // { idx: { qty, disc } }
 
     function fmt(v) { return 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
@@ -133,7 +143,27 @@
     }
 
     function add(idx) {
-      cart[idx] = (cart[idx] || 0) + 1;
+      if(!cart[idx]) {
+        var discInput = document.getElementById('disc-' + idx);
+        var discVal = discInput ? parseFloat(discInput.value) || 0 : 0;
+        cart[idx] = { qty: 1, disc: discVal };
+      } else {
+        cart[idx].qty += 1;
+      }
+      updCart();
+      render();
+    }
+
+    function updateDisc(idx, val) {
+      var d = parseFloat(val) || 0;
+      if(d < 0) d = 0;
+      if(d > 10) d = 10; // Trava de no máximo 10%
+      
+      document.getElementById('disc-' + idx).value = d;
+
+      if(cart[idx]) {
+        cart[idx].disc = d;
+      }
       updCart();
       render();
     }
@@ -141,8 +171,11 @@
     function updCart() {
       var cnt = 0, tot = 0;
       for(var k in cart) {
-        cnt += cart[k];
-        tot += cart[k] * items[k].p;
+        var qty = cart[k].qty;
+        var disc = cart[k].disc || 0;
+        var pFinal = items[k].p * (1 - disc / 100);
+        cnt += qty;
+        tot += qty * pFinal;
       }
       document.getElementById('cnt').innerText = cnt + (cnt === 1 ? ' item selecionado' : ' itens selecionados');
       document.getElementById('tot').innerText = fmt(tot);
@@ -164,16 +197,33 @@
           html += '<div class="group-title">' + currentGroup + '</div>';
         }
 
-        var qty = cart[i] || 0;
+        var inCart = cart[i];
+        var qty = inCart ? inCart.qty : 0;
+        var disc = inCart ? inCart.disc : (document.getElementById('disc-' + i) ? document.getElementById('disc-' + i).value : 0);
+        
+        var pFinal = item.p * (1 - (disc / 100));
+        var hasDisc = disc > 0;
+        var btnClass = qty > 0 ? 'btn-add active' : 'btn-add';
         var btnTxt = qty > 0 ? 'Adicionado (' + qty + 'x)' : '+ Adicionar';
 
         html += '<div class="card">' +
-          '<div class="info">' +
-            '<div class="title">' + item.t + '</div>' +
-            '<div class="spec">' + item.s + '</div>' +
-            '<button class="btn-add" onclick="add(' + i + ')">' + btnTxt + '</button>' +
+          '<div class="card-main">' +
+            '<div class="info">' +
+              '<div class="title">' + item.t + '</div>' +
+              '<div class="spec">' + item.s + '</div>' +
+            '</div>' +
+            '<div class="price-box">' +
+              (hasDisc ? '<div class="price-orig">' + fmt(item.p) + '</div>' : '') +
+              '<div class="price-final">' + fmt(pFinal) + '</div>' +
+            '</div>' +
           '</div>' +
-          '<div class="price">' + fmt(item.p) + '</div>' +
+          '<div class="controls">' +
+            '<div class="disc-group">' +
+              '<span>Desconto (máx 10%):</span>' +
+              '<input type="number" id="disc-' + i + '" class="disc-input" min="0" max="10" step="1" value="' + disc + '" onchange="updateDisc(' + i + ', this.value)" oninput="updateDisc(' + i + ', this.value)"> %' +
+            '</div>' +
+            '<button class="' + btnClass + '" onclick="add(' + i + ')">' + btnTxt + '</button>' +
+          '</div>' +
         '</div>';
       }
 
@@ -183,14 +233,27 @@
     function send() {
       var msg = '*Orçamento - Nina Decor*\n\n';
       var tot = 0, has = false;
+      
       for(var k in cart) {
         has = true;
-        var sub = cart[k] * items[k].p;
+        var qty = cart[k].qty;
+        var disc = cart[k].disc || 0;
+        var pOrig = items[k].p;
+        var pFinal = pOrig * (1 - disc / 100);
+        var sub = qty * pFinal;
         tot += sub;
-        msg += '• ' + cart[k] + 'x ' + items[k].t + '\n  ' + fmt(items[k].p) + ' -> ' + fmt(sub) + '\n';
+
+        msg += '• *' + qty + 'x ' + items[k].t + '*\n';
+        if(disc > 0) {
+          msg += '  De: ' + fmt(pOrig) + ' por: *' + fmt(pFinal) + '* (-' + disc + '% desc.)\n';
+        } else {
+          msg += '  Valor unitário: ' + fmt(pOrig) + '\n';
+        }
+        msg += '  Subtotal: *' + fmt(sub) + '*\n\n';
       }
-      if(!has) { alert('Selecione ao menos um produto.'); return; }
-      msg += '\n*Total: ' + fmt(tot) + '*';
+
+      if(!has) { alert('Selecione ao menos um produto para o orçamento.'); return; }
+      msg += '*Total do Orçamento: ' + fmt(tot) + '*';
       window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     }
 
