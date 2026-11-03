@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="Nina Decor">
   <meta name="theme-color" content="#0f172a">
 
-  <!-- Manifest PWA Embutido para Habilitar a Instalação Nativa no Android -->
+  <!-- Manifest PWA para Instalação no Android/iOS -->
   <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Nina%20Decor%22,%22short_name%22:%22Nina%20Decor%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%230f172a%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/color/192/armchair.png%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
 
   <style>
@@ -22,6 +22,7 @@
       --muted: #94a3b8;
       --border: #334155;
       --green: #22c55e;
+      --red: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -59,8 +60,22 @@
 
     .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 4px; }
     .disc-group { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
-    .disc-input { width: 55px; padding: 4px 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-weight: 600; font-size: 0.85rem; text-align: center; outline: none; }
+    .disc-input { width: 50px; padding: 4px 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-weight: 600; font-size: 0.85rem; text-align: center; outline: none; }
     .disc-input:focus { border-color: var(--accent); }
+
+    .btn-clear {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .btn-clear:active { transform: scale(0.95); }
 
     .btn-add { background: rgba(217, 119, 6, 0.2); color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
     .btn-add.active { background: var(--accent); color: #fff; }
@@ -156,6 +171,22 @@
         btn.className = 'btn-add active';
         btn.innerText = 'Adicionado (' + cart[idx].qty + 'x)';
       }
+      updCart();
+    }
+
+    // Função para ZERAR/LIMPAR o item por completo
+    function clearItem(idx) {
+      delete cart[idx];
+      var input = document.getElementById('disc-' + idx);
+      if(input) input.value = '';
+
+      var btn = document.getElementById('btn-' + idx);
+      if(btn) {
+        btn.className = 'btn-add';
+        btn.innerText = '+ Adicionar';
+      }
+
+      updateCardPrices(idx, 0);
       updCart();
     }
 
@@ -257,8 +288,9 @@
           '</div>' +
           '<div class="controls">' +
             '<div class="disc-group">' +
-              '<span>Desconto (0 a 10%):</span>' +
-              '<input type="number" id="disc-' + i + '" class="disc-input" min="0" max="10" step="1" value="' + (disc || '') + '" placeholder="0" oninput="onDiscInput(' + i + ', this)"> %' +
+              '<span>Desc (0-10%):</span>' +
+              '<input type="number" id="disc-' + i + '" class="disc-input" min="0" max="10" step="1" value="' + (disc || '') + '" placeholder="0" oninput="onDiscInput(' + i + ', this)">%' +
+              '<button class="btn-clear" onclick="clearItem(' + i + ')" title="Zerar item">🗑️ Limpar</button>' +
             '</div>' +
             '<button id="btn-' + i + '" class="' + btnClass + '" onclick="add(' + i + ')">' + btnTxt + '</button>' +
           '</div>' +
